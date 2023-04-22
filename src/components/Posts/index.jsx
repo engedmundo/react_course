@@ -1,3 +1,5 @@
+import "./styles.css";
+
 import { Postcard } from '../PostCard';
 
 export const Posts = ({posts}) => {
