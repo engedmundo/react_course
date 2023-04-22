@@ -1,36 +1,22 @@
-import './App.css';
 import { Component } from 'react';
-import { Postcard } from './components/PostCard';
+
+import './App.css';
+
+import { loadPosts } from "./api/load_posts";
+import { Posts } from "./components/Posts";
 
 class App extends Component {
   state = {
       posts: []
     };
 
-  componentDidMount() {
-    this.loadPosts();
+  async componentDidMount() {
+    await this.loadPosts();
   }
   
   loadPosts = async () => {
-    const postsResponse = fetch("https://jsonplaceholder.typicode.com/posts");
-    const photosResponse = fetch("https://jsonplaceholder.typicode.com/photos");
-
-    const [ posts, photos ] = await Promise.all([postsResponse, photosResponse]);
-    
-    const postsJson = await posts.json();
-    const photosJson = await photos.json();
-    const postsAndPhotos = postsJson.map(
-      (post, index) => {
-        return {
-          ...post, 
-          cover: photosJson[index].url, 
-        }
-      }
-    );
-
-    this.setState({ 
-      posts: postsAndPhotos,
-    });
+    const postsAndPhotos = await loadPosts();
+    this.setState({ posts: postsAndPhotos, });
   }
 
   componentDidUpdate() {
@@ -44,16 +30,7 @@ class App extends Component {
 
     return (
       <section className="container">
-        <div className="posts">
-          {posts.map(post => (
-            <Postcard 
-              key={post.id}
-              title={post.title}
-              cover={post.cover}
-              body={post.body}
-            />
-          ))}
-        </div>
+        <Posts posts={posts} />
       </section>
 
     );
